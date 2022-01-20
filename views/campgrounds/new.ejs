@@ -1,20 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Campground</title>
-  </head>
-  <body>
-    <h1>Enter the details</h1>
+<% layout('layouts/boilerplate.ejs') %>
+<div class="row">
+  <h1 class="text-center">New Campground</h1>
+  <div class="col-6 offset-3">
     <form action="/campgrounds" method="post">
-      <label for="title">Enter title:</label>
-      <input type="text" name="campground[title]" id="title" />
-      <label for="location">Enter location:</label>
-      <input type="text" name="campground[location]" id="location" />
-      <input type="submit" value="Create" />
+      <div class="mb-3">
+        <label for="title" class="form-label">Enter title:</label>
+        <input
+          type="text"
+          name="campground[title]"
+          id="title"
+          class="form-control"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="location" class="form-label">Enter location:</label>
+        <input
+          type="text"
+          name="campground[location]"
+          id="location"
+          class="form-control"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">Enter image url:</label>
+        <input
+          type="text"
+          name="campground[image]"
+          id="image"
+          class="form-control"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Enter price:</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1">$</span>
+          <input
+            type="text"
+            id="price"
+            name="campground[price]"
+            class="form-control"
+            placeholder="0.00"
+            aria-label="price"
+            aria-describedby="price"
+          />
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Enter description:</label>
+        <textarea
+          name="campground[description]"
+          id="description"
+          cols="30"
+          rows="10"
+          class="form-control"
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <input type="submit" value="Create" class="btn btn-success" />
+      </div>
     </form>
     <p><a href="/campgrounds">All campgrounds</a></p>
-  </body>
-</html>
+  </div>
+</div>
