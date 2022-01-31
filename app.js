@@ -6,9 +6,12 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const campgroundRouter = require("./routes/campgrounds");
 const reviewRouter = require("./routes/reviews");
+const userRouter = require("./routes/users");
 const methodOverride = require("method-override");
 const ExpressError = require("./utils/ExpressError");
-const { options } = require("joi");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
 mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp");
 
 const db = mongoose.connection;
@@ -36,6 +39,13 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
@@ -43,9 +53,11 @@ app.use(methodOverride("_method"));
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.currentUser = req.user;
   next();
 });
 
+app.use("/", userRouter);
 app.use("/campgrounds", campgroundRouter);
 app.use("/campgrounds/:id/reviews", reviewRouter);
 
