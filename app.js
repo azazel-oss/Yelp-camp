@@ -1,11 +1,14 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+//
+//
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -17,7 +20,9 @@ const ExpressError = require("./utils/ExpressError");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
-mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp");
+
+const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelp-camp";
+mongoose.connect(dbUrl);
 
 const db = mongoose.connection;
 const app = express();
@@ -31,9 +36,24 @@ app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+const secret = process.env.SECRET || "thisshouldbeabettersecret";
+
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret,
+  },
+});
+
+store.on("error", function (e) {
+  console.log("Session store error", e);
+});
+
 const sessionConfig = {
+  store,
   name: "session",
-  secret: "thisshouldbeabettersecret",
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -127,6 +147,7 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error", { err });
 });
 
-app.listen(3000, () => {
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
   console.log("We are working on server 3000!");
 });
