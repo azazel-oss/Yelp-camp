@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
 const flash = require("connect-flash");
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
 const campgroundRouter = require("./routes/campgrounds");
 const reviewRouter = require("./routes/reviews");
 const userRouter = require("./routes/users");
@@ -29,6 +29,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 const sessionConfig = {
+  // name: "session",
   secret: "thisshouldbeabettersecret",
   resave: false,
   saveUninitialized: true,
@@ -40,6 +41,7 @@ const sessionConfig = {
 };
 app.use(session(sessionConfig));
 app.use(flash());
+// app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -48,6 +50,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// app.use(mongoSanitize());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
